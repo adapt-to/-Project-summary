@@ -81,7 +81,13 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">随机赋值电压的输出</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id2">目标选型</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id3">可行性分析</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">具体实施</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">具体实施</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">预设电压值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">数据选择器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rom">ROM的设置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">协同配合</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -160,6 +166,7 @@
 </ol>
 </dd>
 </dl>
+<hr class="docutils" />
 <div class="section" id="id2">
 <h2>目标选型<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -201,6 +208,7 @@
 </dd>
 </dl>
 </div>
+<hr class="docutils" />
 <div class="section" id="id3">
 <h2>可行性分析<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -224,8 +232,136 @@
 </div></blockquote>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="id4">
 <h2>具体实施<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/shiyitu.png" src="_images/shiyitu.png" />
+<dl class="docutils">
+<dt>如图所示，这是此设计的大致模型图：</dt>
+<dd><ol class="first last arabic simple">
+<li>由PLL锁相环生成高频的时钟</li>
+<li>由SEL数据选择器选择不同的地址位</li>
+<li>由PLL和SEL共同作用，使ROM中的数据输出</li>
+<li>ROM的数字信号通过AN9767转换成模拟信号</li>
+<li>通过BNC线连接示波器显示</li>
+</ol>
+</dd>
+</dl>
+<p>下面分别介绍一下，各个模块的具体实现</p>
+<div class="section" id="id5">
+<h3>预设电压值<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>预设电压值，需要用到工具——<strong>波形数据生成器</strong></p>
+<dl class="docutils">
+<dt>操作步骤如下：</dt>
+<dd><ol class="first arabic simple">
+<li>双击exe文件打开该工具</li>
+<li>点击 <strong>查看 –&gt; 全局参数</strong>，设置为如下：</li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/canshu.png"><img alt="_images/canshu.png" src="_images/canshu.png" style="width: 200px;" /></a>
+</div></blockquote>
+<ol class="last arabic simple" start="3">
+<li>设置后能立即看到网格图发生了变化</li>
+<li>点击 <strong>查看 –&gt; 数据曲线</strong>，设置后便能看到波形曲线</li>
+<li>点击 <strong>手绘波形 –&gt; 线条</strong>，此时切换到手绘模式</li>
+<li>手动在图中绘制想要设置的波形</li>
+<li>点击 <strong>保存</strong> 选择合适位置保存即可（默认保存为.mif文件）</li>
+</ol>
+</dd>
+</dl>
+<p>下图是我设置的电压值的缩略图：</p>
+<a class="reference internal image-reference" href="_images/image_v.png"><img alt="_images/image_v.png" src="_images/image_v.png" style="width: 200px;" /></a>
+<p>由图可以看到，我手绘了4个不同高度的电压值。
+通过记事本打开保存的.mif文件，可以看到图形其实是由这些十六进制数据保存在文件中的</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/image_v_dig.png"><img alt="_images/image_v_dig.png" src="_images/image_v_dig.png" style="width: 200px;" /></a>
+</div></blockquote>
+<dl class="docutils">
+<dt>参考下载：</dt>
+<dd><p class="first"><a class="reference download internal" download="" href="_downloads/10056c9f63b841b155d534e9e8e77bff/Guagle_wave.exe"><code class="xref download docutils literal notranslate"><span class="pre">波形生成器</span></code></a></p>
+<p class="last"><a class="reference download internal" download="" href="_downloads/d112eea145e2f49ea11b3f07d08289c2/four_v.mif"><code class="xref download docutils literal notranslate"><span class="pre">参考.mif文件</span></code></a></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h3>数据选择器<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/sel.jpg" src="_images/sel.jpg" />
+<p>选择器的原理很简单，利用A<sub>1</sub>A<sub>0</sub>的数据选择特性选择不同的输出</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="78%" />
+<col width="22%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>选择输入：A<sub>1</sub>A<sub>0</sub></td>
+<td>输出 F</td>
+</tr>
+<tr class="row-even"><td>00</td>
+<td>D<sub>0</sub></td>
+</tr>
+<tr class="row-odd"><td>01</td>
+<td>D<sub>1</sub></td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>D<sub>2</sub></td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>D<sub>3</sub></td>
+</tr>
+</tbody>
+</table>
+<p>具体实现的verilog代码如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">mux</span><span class="p">(</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">d3</span><span class="p">,</span> <span class="n">d4</span><span class="p">,</span> <span class="n">sel</span><span class="p">,</span> <span class="n">dout</span><span class="p">);</span>
+
+    <span class="nb">input</span> <span class="n">d1</span><span class="p">;</span>
+    <span class="nb">input</span> <span class="n">d2</span><span class="p">;</span>
+    <span class="nb">input</span> <span class="n">d3</span><span class="p">;</span>
+    <span class="nb">input</span> <span class="n">d4</span><span class="p">;</span>
+    <span class="nb">input</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">se1</span><span class="p">;</span>
+
+    <span class="n">output</span> <span class="n">out</span><span class="p">;</span>
+    <span class="n">reg</span> <span class="n">out</span><span class="p">;</span>
+
+    <span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">d1</span> <span class="ow">or</span> <span class="n">d2</span> <span class="ow">or</span> <span class="n">d3</span> <span class="ow">or</span> <span class="n">d4</span> <span class="ow">or</span> <span class="n">sel</span><span class="p">)</span>
+
+    <span class="n">case</span><span class="p">({</span><span class="n">sel</span><span class="p">})</span>
+        <span class="mi">2</span><span class="s1">&#39;b00 : out = d1;</span>
+        <span class="mi">2</span><span class="s1">&#39;b01 : out = d2;</span>
+        <span class="mi">2</span><span class="s1">&#39;b10 : out = d3;</span>
+        <span class="mi">2</span><span class="s1">&#39;b11 : out = d4;</span>
+    <span class="n">endcase</span>
+
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rom">
+<h3>ROM的设置<a class="headerlink" href="#rom" title="Permalink to this headline">¶</a></h3>
+<p>采用IP核能够快速设置ROM， 方法如下：</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>在 <em>Quartus II</em> 中，点击 <strong>Tool –&gt; MegaWizard Plug-In Manager</strong> 在弹出的窗口选择第一项 <em>Create a new custom megafunction variation</em></li>
+<li>在左侧中选择 <strong>ROM:1-PORT</strong>, 再在 <em>output file</em> 栏里输入IP的名称以及存放IP的目录，语法选择Verliog</li>
+<li>设置 ROM 的数据宽度为14bits,数据的深度为1024个数据，如下图红框所示</li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/rom1.png"><img alt="_images/rom1.png" src="_images/rom1.png" style="width: 300px;" /></a>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>中间的步骤默认点击 <em>next</em> 即可，直到到达下图页面，设置之前保存好的mif文件</li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/rom2.png"><img alt="_images/rom2.png" src="_images/rom2.png" style="width: 300px;" /></a>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>继续点击 <em>next</em> 直到最后，点击 <strong>Finish</strong>，这样一个ROM的IP核就设置完成</li>
+</ol>
+</div></blockquote>
+<p>设置完成后，能在 <em>Quartus II</em> 中查看到设置好的IP核，如果想改动参数，直接双击即可再次进入设置流程重新设置</p>
+</div>
+<div class="section" id="id7">
+<h3>协同配合<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+</div>
 </div>
 </div>
 
