@@ -175,17 +175,15 @@
 <p>此型号FPGA的板内资源如图所示，足以胜任本目标的完成。</p>
 <p class="last">官网报价：RMB-1299 链接：<a class="reference external" href="https://detail.tmall.com/item.htm?spm=a230r.1.14.6.632f5a7fhbWb7E&amp;id=548163665175&amp;cm_id=140105335569ed55e27b&amp;abbucket=7">AX530</a></p>
 </div>
-<ol class="last arabic simple" start="2">
+<ol class="arabic simple" start="2">
 <li>DAC模块选型 —— 黑金14位双通道DA模块-AN9767</li>
 </ol>
-</dd>
-</dl>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <img alt="_images/dac.jpg" src="_images/dac.jpg" />
 <p class="last">此DAC模块是目前在黑金官网能够购买到的采样率最高的DA模块，DA更新速率高达 <strong>125M-SPS</strong></p>
 </div>
-<div class="admonition warning">
+<div class="last admonition warning">
 <p class="first admonition-title">Warning</p>
 <dl class="last docutils">
 <dt>怎样理解AD/DA模块的更新速率(或采样速率)：</dt>
@@ -194,14 +192,37 @@
 </dd>
 <dt>怎样理解MSPS或KSPS和频率的关系：</dt>
 <dd><p class="first">输出的频率需要联系到我们的需求，我们将数据波形数据先写入ROM中，然后利用DA模块输出模拟信号</p>
-<p class="last">以本型号的DA模块为例，假设ROM中存储的数据宽度为14bit，存储深度为1024。
-如果我们以1个周期采8个点来计算，那么1024的地址深度一共可以采 1024/8=128个周期的数据。然后再利用采样率125MSPS比上128即得到此时的输出频率为125M/128=15.6MHz</p>
+<p class="last">以本型号的DA模块为例，假设ROM中存储的数据宽度为14bit，存储数据深度为1024。
+如果我们以1个周期采8个点来计算，那么1024的数据深度一共可以采 1024/8=128个周期的数据。然后再利用采样率125MSPS比上128即得到此时的输出频率为125M/128=15.6MHz
+1个周期内的采样点越多，因为ROM的数据深度固定，那么输出的频率就会越小。</p>
 </dd>
 </dl>
 </div>
+</dd>
+</dl>
 </div>
 <div class="section" id="id3">
 <h2>可行性分析<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>——虽然上述的选型中描述了FPGA板的型号以及DA模块的型号，但是如何能够保证目标顺利完成还需要有 <strong>算法</strong> 的帮助</div></blockquote>
+<dl class="docutils">
+<dt>我在此采用的思想是：</dt>
+<dd><ol class="first last arabic simple">
+<li>利用FPGA内嵌的 <strong>ROM</strong> 预存多值电压的数据，因为 <strong>ROM</strong> 的特点是掉电数据不丢失，所以只要预先将我们需要的电压值写入ROM即可</li>
+<li>利用多选一数据选择器，随机的选择ROM中的哪一些地址段的数据</li>
+<li>通过DA将选择的地址端的数据输出</li>
+</ol>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>思想来源</strong></p>
+<blockquote class="last">
+<div><p>使用这个方法是我在查看AN9767的用户手册中想到的，在手册中给出了如何将存储在ROM中的正弦波数据通过DA模块输出到示波器上。
+所以我这个思想是在它的基础上构建而成，具有可行性！</p>
+<p><a class="reference download internal" download="" href="_downloads/b991f229303271f36a87d575d77e63b3/AN9767用户手册REV1.0.pdf"><code class="xref download docutils literal notranslate"><span class="pre">下载AN9767用户手册</span></code></a></p>
+</div></blockquote>
+</div>
 </div>
 <div class="section" id="id4">
 <h2>具体实施<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
