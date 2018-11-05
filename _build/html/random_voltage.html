@@ -84,8 +84,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#id4">具体实施</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id5">预设电压值</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id6">数据选择器</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rom">ROM的设置</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">协同配合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rompllip">ROM和PLL的IP核设置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">代码的形成</a></li>
 </ul>
 </li>
 </ul>
@@ -217,7 +217,7 @@
 <dt>我在此采用的思想是：</dt>
 <dd><ol class="first last arabic simple">
 <li>利用FPGA内嵌的 <strong>ROM</strong> 预存多值电压的数据，因为 <strong>ROM</strong> 的特点是掉电数据不丢失，所以只要预先将我们需要的电压值写入ROM即可</li>
-<li>利用多选一数据选择器，随机的选择ROM中的哪一些地址段的数据</li>
+<li>利用多选一数据选择器的思想，随机的选择ROM中的哪一些地址段的数据</li>
 <li>通过DA将选择的地址端的数据输出</li>
 </ol>
 </dd>
@@ -334,10 +334,12 @@
 <span class="n">endmodule</span>
 </pre></div>
 </div>
+<p>上面就是简单的数据选择器的实现代码，在我的方法中就采用了这种思想，但不是生搬硬套得将上述的代码直接copy进去，
+而仅是采用通过输入选择输出的这种思想，如果你还不是很明白，那么我在下面会详细说明。</p>
 </div>
-<div class="section" id="rom">
-<h3>ROM的设置<a class="headerlink" href="#rom" title="Permalink to this headline">¶</a></h3>
-<p>采用IP核能够快速设置ROM， 方法如下：</p>
+<div class="section" id="rompllip">
+<h3>ROM和PLL的IP核设置<a class="headerlink" href="#rompllip" title="Permalink to this headline">¶</a></h3>
+<p>ROM IP核设置如下：</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li>在 <em>Quartus II</em> 中，点击 <strong>Tool –&gt; MegaWizard Plug-In Manager</strong> 在弹出的窗口选择第一项 <em>Create a new custom megafunction variation</em></li>
@@ -358,9 +360,141 @@
 </ol>
 </div></blockquote>
 <p>设置完成后，能在 <em>Quartus II</em> 中查看到设置好的IP核，如果想改动参数，直接双击即可再次进入设置流程重新设置</p>
+<p>PLL IP核设置如下：</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>在 <em>Quartus II</em> 中，点击 <strong>Tool –&gt; MegaWizard Plug-In Manager</strong> 在弹出的窗口选择第一项 <em>Create a new custom megafunction variation</em></li>
+<li>在左侧窗口的I/O文件夹下选择 <strong>ATLPLL</strong>, 再在 <em>output file</em> 栏里输入IP的名称以及存放IP的目录，语法选择Verliog</li>
+<li>首先设置开发板上的基础时钟以及位数，模式选择普通模式即可，如下图红框所示</li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/pll.png"><img alt="_images/pll.png" src="_images/pll.png" style="width: 300px;" /></a>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>中间的步骤点击 <em>next</em> 即可，直到到达下图页面，此处点击红框，然后手动输入想要PLL输出的频率，如下图所示：</li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/pll2.png"><img alt="_images/pll2.png" src="_images/pll2.png" style="width: 300px;" /></a>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>如果想要继续设置多个输出，则在第4步设置完成后，点击next，接着重复第4步的工作即可。本型号的FPGA板可支持4个PLL输出</li>
+<li>如果只想设置1个或者几个输出，在设置完后直接点击Finish即可</li>
+</ol>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">上述IP核的设置过程，仅针对目前的项目。如有其它需求或想深入了解还请参考 <a class="reference external" href="https://www.cnblogs.com/huangsanye/p/5257119.html">ROM及PLL的IP核设置详解</a></p>
 </div>
-<div class="section" id="id7">
-<h3>协同配合<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id8">
+<h3>代码的形成<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>————代码的实现不是一蹴而就的，而是前面步骤的积累，自然而然产生的结果</div></blockquote>
+<p>总体实现verilog代码(只展示顶层文件代码)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">module</span> <span class="n">random_v</span><span class="p">(</span><span class="n">clk</span><span class="p">,</span> <span class="n">da1_clk</span><span class="p">,</span> <span class="n">da1_wrt</span><span class="p">,</span> <span class="n">da1_data</span><span class="p">,</span> <span class="n">da2_clk</span><span class="p">,</span> <span class="n">da2_wrt</span><span class="p">,</span> <span class="n">da2_data</span><span class="p">);</span>
+
+       <span class="nb">input</span> <span class="n">clk</span><span class="p">,</span>
+       <span class="n">output</span> <span class="n">da1_clk</span><span class="p">,</span>
+       <span class="n">output</span> <span class="n">da1_wrt</span><span class="p">,</span>
+       <span class="n">output</span> <span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">da1_data</span><span class="p">,</span>
+       <span class="n">output</span> <span class="n">da2_clk</span><span class="p">,</span>
+       <span class="n">output</span> <span class="n">da2_wrt</span><span class="p">,</span>
+       <span class="n">output</span> <span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">da2_data</span>
+
+
+       <span class="n">reg</span> <span class="p">[</span><span class="mi">9</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rom_addr</span><span class="p">;</span>
+       <span class="n">wire</span> <span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rom_data</span><span class="p">;</span>
+       <span class="n">wire</span> <span class="n">clk_50</span><span class="p">;</span>
+       <span class="n">wire</span> <span class="n">clk_125</span><span class="p">;</span>
+       <span class="n">wire</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sel</span><span class="p">;</span>
+
+       <span class="n">assign</span> <span class="n">da1_clk</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
+       <span class="n">assign</span> <span class="n">da1_wrt</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
+       <span class="n">assign</span> <span class="n">da1_data</span><span class="o">=</span><span class="n">rom_data</span><span class="p">;</span>
+
+       <span class="n">assign</span> <span class="n">da2_clk</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
+       <span class="n">assign</span> <span class="n">da2_wrt</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
+       <span class="n">assign</span> <span class="n">da2_data</span><span class="o">=</span><span class="n">rom_data</span><span class="p">;</span>
+
+   <span class="n">always</span> <span class="o">@</span><span class="p">(</span><span class="n">posedge</span> <span class="n">clk_125</span><span class="p">)</span>
+   <span class="n">begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="n">sel</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="s1">&#39;b00)</span>
+           <span class="n">begin</span>
+               <span class="k">if</span><span class="p">(</span><span class="mi">10</span><span class="s1">&#39;d0 &lt;= rom_addr &lt;= 10&#39;</span><span class="n">d255</span><span class="p">)</span>
+               <span class="n">begin</span>
+               <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="n">rom_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="s1">&#39;b1 ;</span>
+               <span class="n">end</span>
+               <span class="k">else</span> <span class="n">begin</span>
+               <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="s1">&#39;d0;</span>
+           <span class="n">end</span>
+       <span class="n">end</span>
+
+       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">sel</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="s1">&#39;b01) begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="mi">10</span><span class="s1">&#39;d256 &lt;= rom_addr &lt;= 10&#39;</span><span class="n">d511</span><span class="p">)</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="n">rom_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+           <span class="k">else</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="s1">&#39;d256;</span>
+           <span class="n">end</span>
+       <span class="n">end</span>
+
+       <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">sel</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span><span class="mi">2</span><span class="s1">&#39;b01) begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="mi">10</span><span class="s1">&#39;d512 &lt;= rom_addr &lt;= 10&#39;</span><span class="n">d767</span><span class="p">)</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="n">rom_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+           <span class="n">end</span>
+           <span class="k">else</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="s1">&#39;d512;</span>
+           <span class="n">end</span>
+       <span class="n">end</span>
+
+       <span class="k">else</span> <span class="n">begin</span>
+       <span class="k">if</span><span class="p">(</span><span class="mi">10</span><span class="s1">&#39;d768 &lt;= rom_addr &lt;= 10&#39;</span><span class="n">d1023</span><span class="p">)</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="n">rom_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="s1">&#39;b1;</span>
+           <span class="n">end</span>
+           <span class="k">else</span> <span class="n">begin</span>
+           <span class="n">rom_addr</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="s1">&#39;d768;</span>
+           <span class="n">end</span>
+       <span class="n">end</span>
+   <span class="n">end</span>
+
+   <span class="n">wire</span> <span class="n">div_out</span><span class="p">;</span>
+   <span class="n">div_f</span>       <span class="n">div_f_inst</span><span class="p">(</span>
+           <span class="o">.</span><span class="n">clk</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+           <span class="o">.</span><span class="n">div_out</span><span class="p">(</span><span class="n">div_out</span><span class="p">)</span>
+           <span class="p">);</span>
+
+   <span class="n">wire</span> <span class="n">qq</span><span class="p">;</span>
+   <span class="n">sample</span> <span class="n">sample_inst</span><span class="p">(</span>
+               <span class="o">.</span><span class="n">d</span><span class="p">(</span><span class="n">clk_125</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">clk</span><span class="p">(</span><span class="n">div_out</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">qq</span><span class="p">(</span><span class="n">qq</span><span class="p">)</span>
+   <span class="p">);</span>
+
+   <span class="n">RanGen</span> <span class="n">RanGen_inst</span><span class="p">(</span>
+               <span class="o">.</span><span class="n">clk</span> <span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">qq</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">rand_num</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+   <span class="p">);</span>
+
+   <span class="n">ROM</span> <span class="n">ROM_inst</span> <span class="p">(</span>
+               <span class="o">.</span><span class="n">clock</span>   <span class="p">(</span><span class="n">clk_125</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">address</span> <span class="p">(</span><span class="n">rom_addr</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">q</span>       <span class="p">(</span><span class="n">rom_data</span><span class="p">)</span>
+   <span class="p">);</span>
+
+   <span class="n">pll</span> <span class="n">pll_inst</span><span class="p">(</span>
+               <span class="o">.</span><span class="n">areset</span>  <span class="p">(</span><span class="mi">1</span><span class="s1">&#39;b0),</span>
+               <span class="o">.</span><span class="n">inclk0</span>  <span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">c0</span>      <span class="p">(</span><span class="n">clk_50</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">c1</span>      <span class="p">(</span><span class="n">clk_125</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">locked</span>  <span class="p">()</span>
+   <span class="p">);</span>
+
+<span class="n">endmodule</span>
+</pre></div>
+</div>
+<p>上面的代码是针对每个模块的例化，其中包括对ROM、PLL的IP核文件的例化，对伪随机发生器、分频器的例化。</p>
+<p>因为上面为硬件描述性语言verilog，而本文档支持的编程语言为python，所以我没有在上述代码添加注释。
+如想深入了解，请参考下载该文件： <a class="reference download internal" download="" href="_downloads/117cfec14435fe9bca9602e509305523/random_v.v"><code class="xref download docutils literal notranslate"><span class="pre">verilog参考程序</span></code></a></p>
 </div>
 </div>
 </div>

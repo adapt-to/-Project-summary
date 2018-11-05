@@ -55,7 +55,7 @@
 
 我在此采用的思想是：
  1. 利用FPGA内嵌的 **ROM** 预存多值电压的数据，因为 **ROM** 的特点是掉电数据不丢失，所以只要预先将我们需要的电压值写入ROM即可
- 2. 利用多选一数据选择器，随机的选择ROM中的哪一些地址段的数据
+ 2. 利用多选一数据选择器的思想，随机的选择ROM中的哪一些地址段的数据
  3. 通过DA将选择的地址端的数据输出
 
 .. note::
@@ -155,11 +155,14 @@
         endcase
 
     endmodule
+ 
+上面就是简单的数据选择器的实现代码，在我的方法中就采用了这种思想，但不是生搬硬套得将上述的代码直接copy进去，
+而仅是采用通过输入选择输出的这种思想，如果你还不是很明白，那么我在下面会详细说明。
 
-ROM的设置
+ROM和PLL的IP核设置
 --------------------
 
-采用IP核能够快速设置ROM， 方法如下：
+ROM IP核设置如下：
 
  1. 在 *Quartus II* 中，点击 **Tool --> MegaWizard Plug-In Manager** 在弹出的窗口选择第一项 *Create a new custom megafunction variation*
  2. 在左侧中选择 **ROM:1-PORT**, 再在 *output file* 栏里输入IP的名称以及存放IP的目录，语法选择Verliog
@@ -173,9 +176,134 @@ ROM的设置
  
 设置完成后，能在 *Quartus II* 中查看到设置好的IP核，如果想改动参数，直接双击即可再次进入设置流程重新设置
 
-协同配合
+PLL IP核设置如下：
+
+ 1. 在 *Quartus II* 中，点击 **Tool --> MegaWizard Plug-In Manager** 在弹出的窗口选择第一项 *Create a new custom megafunction variation*
+ 2. 在左侧窗口的I/O文件夹下选择 **ATLPLL**, 再在 *output file* 栏里输入IP的名称以及存放IP的目录，语法选择Verliog
+ 3. 首先设置开发板上的基础时钟以及位数，模式选择普通模式即可，如下图红框所示
+  .. image:: ./pll.png
+   :width: 300px
+ 4. 中间的步骤点击 *next* 即可，直到到达下图页面，此处点击红框，然后手动输入想要PLL输出的频率，如下图所示：
+   .. image:: ./pll2.png
+    :width: 300px
+ 5. 如果想要继续设置多个输出，则在第4步设置完成后，点击next，接着重复第4步的工作即可。本型号的FPGA板可支持4个PLL输出
+ 6. 如果只想设置1个或者几个输出，在设置完后直接点击Finish即可
+
+ 
+.. warning::
+ 上述IP核的设置过程，仅针对目前的项目。如有其它需求或想深入了解还请参考 `ROM及PLL的IP核设置详解 <https://www.cnblogs.com/huangsanye/p/5257119.html>`_
+
+代码的形成
 --------------------
 
+ ————代码的实现不是一蹴而就的，而是前面步骤的积累，自然而然产生的结果
+
+总体实现verilog代码(只展示顶层文件代码) ::
+
+    module random_v(clk, da1_clk, da1_wrt, da1_data, da2_clk, da2_wrt, da2_data); 
+
+        input clk, 
+        output da1_clk, 
+        output da1_wrt, 
+        output [13:0] da1_data,
+        output da2_clk, 
+        output da2_wrt, 
+        output [13:0] da2_data 
+
+
+        reg [9:0] rom_addr; 
+        wire [13:0] rom_data; 
+        wire clk_50; 
+        wire clk_125; 
+        wire [7:0] sel;
+        
+        assign da1_clk=clk_125; 
+        assign da1_wrt=clk_125;
+        assign da1_data=rom_data; 
+        
+        assign da2_clk=clk_125; 
+        assign da2_wrt=clk_125; 
+        assign da2_data=rom_data; 
+        
+    always @(posedge clk_125) 
+    begin
+        if(sel[4:3] == 2'b00) 
+            begin
+                if(10'd0 <= rom_addr <= 10'd255) 
+                begin
+                rom_addr <= rom_addr + 1'b1 ; 
+                end
+                else begin
+                rom_addr <= 10'd0;
+            end 
+        end
+        
+        else if(sel[4:3] == 2'b01) begin
+        if(10'd256 <= rom_addr <= 10'd511) begin
+            rom_addr <= rom_addr + 1'b1;
+            else begin
+            rom_addr <= 10'd256;
+            end 
+        end
+        
+        else if(sel[4:3] ==2'b01) begin
+        if(10'd512 <= rom_addr <= 10'd767) begin
+            rom_addr <= rom_addr + 1'b1; 
+            end
+            else begin
+            rom_addr <= 10'd512;
+            end 
+        end
+        
+        else begin
+        if(10'd768 <= rom_addr <= 10'd1023) begin
+            rom_addr <= rom_addr + 1'b1;
+            end
+            else begin
+            rom_addr <= 10'd768;
+            end 
+        end   
+    end
+
+    wire div_out;
+    div_f	div_f_inst(
+            .clk(clk),
+            .div_out(div_out)
+            );
+
+    wire qq;
+    sample sample_inst(
+                .d(clk_125),
+                .clk(div_out),
+                .qq(qq)
+    );
+                        
+    RanGen RanGen_inst(
+                .clk (clk),
+                .seed(qq),
+                .rand_num (sel)  
+    );
+    
+    ROM ROM_inst (
+                .clock   (clk_125),
+                .address (rom_addr), 
+                .q       (rom_data)
+    ); 
+    
+    pll pll_inst( 
+                .areset  (1'b0),
+                .inclk0  (clk),
+                .c0      (clk_50), 
+                .c1      (clk_125),
+                .locked  ()  
+    ); 
+ 
+ endmodule
+
+上面的代码是针对每个模块的例化，其中包括对ROM、PLL的IP核文件的例化，对伪随机发生器、分频器的例化。
+
+因为上面为硬件描述性语言verilog，而本文档支持的编程语言为python，所以我没有在上述代码添加注释。
+如想深入了解，请参考下载该文件： :download:`verilog参考程序 <random_v.v>`
 
 
 
