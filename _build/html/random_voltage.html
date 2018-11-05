@@ -180,6 +180,25 @@
 </ol>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<img alt="_images/dac.jpg" src="_images/dac.jpg" />
+<p class="last">此DAC模块是目前在黑金官网能够购买到的采样率最高的DA模块，DA更新速率高达 <strong>125M-SPS</strong></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<dl class="last docutils">
+<dt>怎样理解AD/DA模块的更新速率(或采样速率)：</dt>
+<dd><p class="first">为了保证转换的正确完成，采样速率（Sample Rate）必须小于或等于转换速率。可以说转换速率是最大采样速率，因此有人习惯上将转换速率在数值上等同于采样速率也是可以接受的。常用单位是KSPS或MSPS（1MSPS=1000KSPS）</p>
+<p class="last">例如上述的125MSPS便是指：每秒钟的数模的采样数为125M个。</p>
+</dd>
+<dt>怎样理解MSPS或KSPS和频率的关系：</dt>
+<dd><p class="first">输出的频率需要联系到我们的需求，我们将数据波形数据先写入ROM中，然后利用DA模块输出模拟信号</p>
+<p class="last">以本型号的DA模块为例，假设ROM中存储的数据宽度为14bit，存储深度为1024。
+如果我们以1个周期采8个点来计算，那么1024的地址深度一共可以采 1024/8=128个周期的数据。然后再利用采样率125MSPS比上128即得到此时的输出频率为125M/128=15.6MHz</p>
+</dd>
+</dl>
+</div>
 </div>
 <div class="section" id="id3">
 <h2>可行性分析<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
