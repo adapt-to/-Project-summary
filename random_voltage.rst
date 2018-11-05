@@ -90,7 +90,7 @@
 操作步骤如下：
  1. 双击exe文件打开该工具
  2. 点击 **查看 --> 全局参数**，设置为如下：
-  .. image:: ./canshu.png
+  .. image:: ./canshu.PNG
    :width: 200
  3. 设置后能立即看到网格图发生了变化
  4. 点击 **查看 --> 数据曲线**，设置后便能看到波形曲线
@@ -167,7 +167,7 @@ ROM的设置
   .. image:: ./rom1.png
    :width: 300px
  4. 中间的步骤默认点击 *next* 即可，直到到达下图页面，设置之前保存好的mif文件
-   .. image:: ./rom2.png
+   .. image:: ./rom2.PNG
     :width: 300px
  5. 继续点击 *next* 直到最后，点击 **Finish**，这样一个ROM的IP核就设置完成
  
