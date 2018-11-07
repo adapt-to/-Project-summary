@@ -21,4 +21,5 @@
 .. toctree::
    :maxdepth: 2
 
+   pc_fpga
    random_voltage
