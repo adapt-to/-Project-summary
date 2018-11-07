@@ -215,7 +215,7 @@ PLL IP核设置如下：
         wire [13:0] rom_data; 
         wire clk_50; 
         wire clk_125; 
-        wire [7:0] sel;
+        
         
         assign da1_clk=clk_125; 
         assign da1_wrt=clk_125;
@@ -272,16 +272,19 @@ PLL IP核设置如下：
             );
 
     wire qq;
+    wire load;
     sample sample_inst(
                 .d(clk_125),
                 .clk(div_out),
+                .load(load),
                 .qq(qq)
     );
-                        
+    wire [2:0] sel;                  
     RanGen RanGen_inst(
                 .clk (clk),
+                .load(load),
                 .seed(qq),
-                .rand_num (sel)  
+                .sel (sel)  
     );
     
     ROM ROM_inst (
@@ -305,7 +308,7 @@ PLL IP核设置如下：
 
 参考下载： 
 
-:download:`verilog参考程序 <random_v.v>`
+:download:`verilog完整程序 <verilog_test.rar>`
 
 -----------------------------------------
 

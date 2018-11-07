@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="项目总结笔记" href="index.html" /> 
+    <link rel="prev" title="PC与FPGA的以太网通信" href="pc_fpga.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -78,6 +78,7 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pc_fpga.html">PC与FPGA的以太网通信</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">随机赋值电压的输出</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id2">目标选型</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id3">可行性分析</a></li>
@@ -407,7 +408,7 @@
        <span class="n">wire</span> <span class="p">[</span><span class="mi">13</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">rom_data</span><span class="p">;</span>
        <span class="n">wire</span> <span class="n">clk_50</span><span class="p">;</span>
        <span class="n">wire</span> <span class="n">clk_125</span><span class="p">;</span>
-       <span class="n">wire</span> <span class="p">[</span><span class="mi">7</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sel</span><span class="p">;</span>
+
 
        <span class="n">assign</span> <span class="n">da1_clk</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
        <span class="n">assign</span> <span class="n">da1_wrt</span><span class="o">=</span><span class="n">clk_125</span><span class="p">;</span>
@@ -464,16 +465,19 @@
            <span class="p">);</span>
 
    <span class="n">wire</span> <span class="n">qq</span><span class="p">;</span>
+   <span class="n">wire</span> <span class="n">load</span><span class="p">;</span>
    <span class="n">sample</span> <span class="n">sample_inst</span><span class="p">(</span>
                <span class="o">.</span><span class="n">d</span><span class="p">(</span><span class="n">clk_125</span><span class="p">),</span>
                <span class="o">.</span><span class="n">clk</span><span class="p">(</span><span class="n">div_out</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load</span><span class="p">),</span>
                <span class="o">.</span><span class="n">qq</span><span class="p">(</span><span class="n">qq</span><span class="p">)</span>
    <span class="p">);</span>
-
+   <span class="n">wire</span> <span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">sel</span><span class="p">;</span>
    <span class="n">RanGen</span> <span class="n">RanGen_inst</span><span class="p">(</span>
                <span class="o">.</span><span class="n">clk</span> <span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+               <span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load</span><span class="p">),</span>
                <span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">qq</span><span class="p">),</span>
-               <span class="o">.</span><span class="n">rand_num</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">sel</span> <span class="p">(</span><span class="n">sel</span><span class="p">)</span>
    <span class="p">);</span>
 
    <span class="n">ROM</span> <span class="n">ROM_inst</span> <span class="p">(</span>
@@ -495,7 +499,7 @@
 </div>
 <p>上面的代码是针对每个模块的例化，其中包括对ROM、PLL的IP核文件的例化，对伪随机发生器、分频器的例化。因为上述为硬件描述性语言verilog，而本文档支持的编程语言为python，由于语法冲突故没有在上述代码添加注释。</p>
 <p>参考下载：</p>
-<p><a class="reference download internal" download="" href="_downloads/117cfec14435fe9bca9602e509305523/random_v.v"><code class="xref download docutils literal notranslate"><span class="pre">verilog参考程序</span></code></a></p>
+<p><a class="reference download internal" download="" href="_downloads/f83afe82122bea88ead4081725c3642f/verilog_test.rar"><code class="xref download docutils literal notranslate"><span class="pre">verilog完整程序</span></code></a></p>
 </div>
 </div>
 <hr class="docutils" />
@@ -524,7 +528,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="index.html" class="btn btn-neutral" title="项目总结笔记" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pc_fpga.html" class="btn btn-neutral" title="PC与FPGA的以太网通信" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
