@@ -80,7 +80,15 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PC与FPGA的以太网通信</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">预期目标</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">目标选型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">通信方式</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#udp">UDP协议</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fpga">FPGA如何实现</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#verilog">verilog实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">验证接收</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="random_voltage.html">随机赋值电压的输出</a></li>
@@ -150,8 +158,34 @@
             
   <div class="section" id="pcfpga">
 <h1>PC与FPGA的以太网通信<a class="headerlink" href="#pcfpga" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>预期目标<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><em>FPGA</em> 和 <em>PC</em> 通过 <em>UDP</em> 协议通信</li>
+<li>数据传输为单项传输， <em>PC</em> 发送，<em>FPGA</em> 接收</li>
+<li>发送的数据为 <em>PC</em> 端制备的随机数</li>
+</ol>
+</div></blockquote>
+</div>
+<hr class="docutils" />
+<div class="section" id="id2">
+<h2>目标选型<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt>PC如何与FPGA的通信方式有很多中，根据FPGA的型号而定，就本项目所使用的FGPA(AX530)而言，通信方式不外乎有以下几种：</dt>
+<dt>目标选型具体阐述已在 <a class="reference internal" href="random_voltage.html"><span class="doc">此部分</span></a> 给出，这里简单给出本节所用设备型号：</dt>
+<dd><ol class="first last arabic simple">
+<li><em>FPGA</em> – 黑金 <em>AX530</em></li>
+<li><em>PC</em> – <em>win10</em> 电脑</li>
+<li>网线</li>
+</ol>
+</dd>
+</dl>
+</div>
+<hr class="docutils" />
+<div class="section" id="id3">
+<h2>通信方式<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>PC</em> 如何与 <em>FPGA</em> 的通信方式有很多中，根据 <em>FPGA</em> 的型号而定，就本项目所使用的 <em>FPGA*(*AX530</em>)而言，通信方式不外乎有以下几种：</dt>
 <dd><ol class="first arabic simple">
 <li>利用USB的串口通信 ———— 速度在百兆左右</li>
 <li>利用以太网的网口通信 ———— 速度有百兆和千兆两个量级。</li>
@@ -159,27 +193,65 @@
 <blockquote class="last">
 <div><div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>其中由传输协议又细分为TCP协议和UDP协议</p>
-<p>TCP协议需要使用多次握手确定双方的连接关系，是一种安全的通信方式，并且由于建立了通信双方的连接，
-故传输的数据不会丢失，缺点是速度较UDP协议慢</p>
-<p class="last">UDP协议是面向无连接的协议，即发送方只管发送信息，接收方只管接收信息。是一种适用于高速传输的场景中，例如：视频直播、网络游戏、聊天软件等都是利用了UDP协议。
+<p>其中由传输协议又细分为 <em>TCP</em> 协议和 <em>UDP</em> 协议</p>
+<p><em>TCP</em> 协议需要使用多次握手确定双方的连接关系，是一种安全的通信方式，并且由于建立了通信双方的连接，
+故传输的数据不会丢失，缺点是速度较 <em>UDP</em> 协议慢</p>
+<p class="last"><em>UDP</em> 协议是面向无连接的协议，即发送方只管发送信息，接收方只管接收信息。是一种适用于高速传输的场景中，例如：视频直播、网络游戏、聊天软件等都是利用了 <em>UDP</em> 协议。
 它会存在一定的丢包率，不过由于传输速率很快，所以较少的丢包并不会影响整体。</p>
 </div>
 </div></blockquote>
 </dd>
 </dl>
+</div>
+<hr class="docutils" />
 <div class="section" id="udp">
 <h2>UDP协议<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>UDP协议全称为（User Datagram Protocol），即用户数据报协议。UDP协议是一种基本的、低延迟的数据报的通讯。数据报就是一种自带寻址信息，从发送端到接收端的数据包。
+<p><em>UDP</em> 协议全称为（<em>User Datagram Protocol</em>），即用户数据报协议。<em>UDP</em> 协议是一种基本的、低延迟的数据报的通讯。数据报就是一种自带寻址信息，从发送端到接收端的数据包。
 其常用于图像传输、网络监控数据交换等数据传输速度要求比较高的场合。</p>
-<p class="last">更多关于UDP协议知识，请访问 <a class="reference external" href="https://baike.baidu.com/item/UDP">UDP百科</a></p>
+<p class="last">更多关于 <em>UDP</em> 协议知识，请访问 <a class="reference external" href="https://baike.baidu.com/item/UDP">UDP百科</a></p>
 </div>
-<p>基于本开发板的板上资源，通信协议采用 Ethernet UDP通信协议，FPGA通过GMII总线和开发板上的Gigabit PHY芯片通信，Gigabit PHY芯片再把数据通过网线发送给PC。
+<p>基于本开发板的板上资源，通信协议采用 <em>Ethernet UDP</em> 通信协议，<em>FPGA</em> 通过 <em>GMII</em> 总线和开发板上的 <em>Gigabit PHY</em> 芯片通信，<em>Gigabit PHY</em> 芯片再把数据通过网线发送给 <em>PC</em>。
 传输示意图如下：</p>
 <img alt="_images/kuangtu.png" src="_images/kuangtu.png" />
-<p>在本开发板（AX530）中，采用</p>
+<p>在本开发板（AX530）中，采用 <em>Realtek</em> 千兆 <em>GPHY</em> 芯片 <em>RTL8211E</em> 来实现 <strong>千兆以太网数据通信</strong>。该芯片能够自动选择传输速率，
+当网口连接到千兆以太网时，<em>FPGA</em> 通过 <em>GMII</em> 总线和 <em>PHY</em> 芯片进行数据通信；当网口连接到百兆以太网时，<em>FPGA</em> 通过 <em>MII</em> 总线和 <em>PHY</em> 芯片进行数据通信。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">这里的千兆以太网和百兆以太网，还应根据具体电脑配置是否支持千兆以太网来判断，不过目前大部分电脑已支持千兆网口。</p>
+</div>
+<p><em>FPGA</em> 通过 <em>MDI</em>/<em>MDIO</em> 管理接口来配置或读取 <em>PHY</em> 芯片内部的寄存器。</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="fpga">
+<h2>FPGA如何实现<a class="headerlink" href="#fpga" title="Permalink to this headline">¶</a></h2>
+<p>上面讲到，FPGA中的芯片会根据 <em>Link</em> 的具体是千兆还是百兆自动选择，所以在千兆通信或百兆通信，引脚触发是不一样的。</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>在千兆的 <em>GMII</em> 通信模式下，发送数据时，发送时钟为125 <em>Mhz</em> 的 <em>GTXC</em> 信号，数据有效信号为 TXEN，；接收数据时，接收时钟为125 <em>Mhz</em> 的RXC信号，数据有效信号为 <em>RXDV</em></li>
+<li>在百兆的 <em>MII</em> 通信模式下，发送数据时，发送时钟为25 <em>Mhz</em> 的 <em>TXC</em> 信号，数据有效信号为 TXEN，；接收数据时，接收时钟为25 <em>Mhz</em> 的RXC信号，数据有效信号为 <em>RXDV</em></li>
+</ol>
+<p>更多关于 <em>GMII</em> 和 <em>MII</em> 通信模式请参考： <a class="reference external" href="https://blog.csdn.net/reille/article/details/6312156">MII、GMII接口详细介绍</a></p>
+</div></blockquote>
+<div class="section" id="verilog">
+<h3>verilog实现<a class="headerlink" href="#verilog" title="Permalink to this headline">¶</a></h3>
+<p>因为本节实现的功能主要是 <em>FPGA</em> 和 <em>PC</em> 利用 <em>UDP</em> 协议进行单向的数据传输 （<em>PC</em> 发，<em>FPGA</em> 收）。
+所以在 <em>verilog</em> 代码，项目主要由以下几个模块构成：</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>顶层模块 —- 例化其他子模块</li>
+<li><em>UDP</em> 接收模块 —- 接收由 <em>PC</em> 发送的数据</li>
+<li><em>CRC</em> 校验模块 —- 对接收的数据进行错误校验，如发现错误就抛弃数据包</li>
+<li><em>UDP</em> 测试模块 —- 进行代码测试</li>
+</ol>
+</div></blockquote>
+<p>具体的代码，用户手册中有具体给出，这里就不一一列举。</p>
+</div>
+<div class="section" id="id5">
+<h3>验证接收<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>如何验证是否接收到，这里需要用到工具–网络调试助手</p>
+</div>
 </div>
 </div>
 
