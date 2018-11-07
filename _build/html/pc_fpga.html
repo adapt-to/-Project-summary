@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PC与FPGA的以太网通信 &mdash; Project summary 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="随机赋值电压的输出" href="random_voltage.html" />
+    <link rel="prev" title="项目总结笔记" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Project summary
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PC与FPGA的以太网通信</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#udp">UDP协议</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="random_voltage.html">随机赋值电压的输出</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Project summary</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>PC与FPGA的以太网通信</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pc_fpga.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pcfpga">
+<h1>PC与FPGA的以太网通信<a class="headerlink" href="#pcfpga" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>PC如何与FPGA的通信方式有很多中，根据FPGA的型号而定，就本项目所使用的FGPA(AX530)而言，通信方式不外乎有以下几种：</dt>
+<dd><ol class="first arabic simple">
+<li>利用USB的串口通信 ———— 速度在百兆左右</li>
+<li>利用以太网的网口通信 ———— 速度有百兆和千兆两个量级。</li>
+</ol>
+<blockquote class="last">
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>其中由传输协议又细分为TCP协议和UDP协议</p>
+<p>TCP协议需要使用多次握手确定双方的连接关系，是一种安全的通信方式，并且由于建立了通信双方的连接，
+故传输的数据不会丢失，缺点是速度较UDP协议慢</p>
+<p class="last">UDP协议是面向无连接的协议，即发送方只管发送信息，接收方只管接收信息。是一种适用于高速传输的场景中，例如：视频直播、网络游戏、聊天软件等都是利用了UDP协议。
+它会存在一定的丢包率，不过由于传输速率很快，所以较少的丢包并不会影响整体。</p>
+</div>
+</div></blockquote>
+</dd>
+</dl>
+<div class="section" id="udp">
+<h2>UDP协议<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>UDP协议全称为（User Datagram Protocol），即用户数据报协议。UDP协议是一种基本的、低延迟的数据报的通讯。数据报就是一种自带寻址信息，从发送端到接收端的数据包。
+其常用于图像传输、网络监控数据交换等数据传输速度要求比较高的场合。</p>
+<p class="last">更多关于UDP协议知识，请访问 <a class="reference external" href="https://baike.baidu.com/item/UDP">UDP百科</a></p>
+</div>
+<p>基于本开发板的板上资源，通信协议采用 Ethernet UDP通信协议，FPGA通过GMII总线和开发板上的Gigabit PHY芯片通信，Gigabit PHY芯片再把数据通过网线发送给PC。
+传输示意图如下：</p>
+<img alt="_images/kuangtu.png" src="_images/kuangtu.png" />
+<p>在本开发板（AX530）中，采用</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="random_voltage.html" class="btn btn-neutral float-right" title="随机赋值电压的输出" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="项目总结笔记" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, adapt
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
