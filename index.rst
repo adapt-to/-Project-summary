@@ -22,5 +22,6 @@
    :maxdepth: 2
 
    pc_fpga
-   random_voltage
    random_clk
+   random_voltage
+   
