@@ -23,3 +23,4 @@
 
    pc_fpga
    random_voltage
+   random_clk
