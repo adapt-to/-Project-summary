@@ -21,8 +21,10 @@
 .. toctree::
    :maxdepth: 2
 
+   equipment_selection
    pc_fpga
    random_clk
    random_voltage
    unit_test
+
    
