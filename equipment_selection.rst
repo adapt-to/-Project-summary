@@ -56,8 +56,8 @@
 在这里我调研了多款电控的光衰减器。具体有以下几种（点击可访问查看）：
 
  1. `华泰Huatai VOA500系列 <http://www.catvworld.net.cn/products/attenuator/voa700/index.htm>`_ （杭州华泰） 
- 2. `微处理器补偿型数控MEMS衰减器 <http://www.quantum-info.com/product/coredevice/2017/0504/120.html>`_（国盾量子）
- 3. `OZ电控可调光衰减器 <http://www.rayscience.com/product-13480.html>`_（瞬渺光电）
+ 2. `微处理器补偿型数控MEMS衰减器 <http://www.quantum-info.com/product/coredevice/2017/0504/120.html>`_ （国盾量子）
+ 3. `OZ电控可调光衰减器 <http://www.rayscience.com/product-13480.html>`_ （瞬渺光电）
 
 最后与杜聪协商，他建议利用IM替代电控光衰减器，一方面是实验室现有，第二是体积小，方便以后封装。
 
