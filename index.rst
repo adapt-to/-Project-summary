@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-项目总结笔记
+适用于双协议的诱骗态量子光源的研制 —— 技术文档
 ===========================================
  ——2018.11.5 by `adapt <http://www.myheyufei.com/>`_
 
@@ -21,6 +21,7 @@
 .. toctree::
    :maxdepth: 2
 
+   decoy_quantum_source_foreword
    equipment_selection
    pc_fpga
    random_clk
