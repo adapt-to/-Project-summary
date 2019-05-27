@@ -52,7 +52,7 @@ Python下载官方地址:
 
 2. 利用ctrl + F在该页面检索zmq，并入下图所示：
 
-.. image:: ./zmq.png
+.. image:: ./zmq1.png
 
 
 .. note::
