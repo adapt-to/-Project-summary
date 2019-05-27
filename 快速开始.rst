@@ -40,7 +40,7 @@ Python下载官方地址:
 
     .. image:: ./lujin.png
 
-    然后在此文件夹下打开命令行窗口并在窗口中输入: pip install xxxxx (其中的xxxxx则为你需要安装的第三方库)
+    然后在此文件夹下打开命令行窗口并在窗口中输入: ``pip install xxxxx`` (其中的xxxxx则为你需要安装的第三方库)
 
 不过由于一些其他的原因导致通过这种方式并不能成功安装。本程序所需要的Zeromq即是如此。
 
@@ -58,6 +58,6 @@ Python下载官方地址:
 .. note::
     1. 图中蓝色部分即是我们需要下载的第三方库文件，这里的cp27表示是python2.7版本，win_amd64即表示为window下的64位系统
     2. 点击下载后我们会得到一个后缀为whl的文件，将其保存到1.2节中所介绍的python的第三方库目录的文件夹下
-    3. 在此处打开命令行窗口并输入: pip install pyzmq‑18.0.1‑cp27‑cp27m‑win_amd64.whl
+    3. 在此处打开命令行窗口并输入: ``pip install pyzmq‑18.0.1‑cp27‑cp27m‑win_amd64.whl``
 
 这样就能够成功安装zmq第三方库。
