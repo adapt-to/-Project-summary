@@ -36,7 +36,7 @@ Python下载官方地址:
 由于使用了一些第三方库进行编写程序，所以需要在安装完成Python之后将需要的第三方库也安装完成。
 
 .. note::
-    一般的安装方法是如下图所示打开至Python所在目录下的此处:
+    一般的安装方法是如下图所示打开至Python所在目录下的此处( 这里以python3.6为例，python2亦是如此 ):
 
     .. image:: ./lujin.png
 
@@ -50,7 +50,7 @@ Python下载官方地址:
 1. 首先打开网址:`https://www.lfd.uci.edu/~gohlke/pythonlibs/#babel <https://www.lfd.uci.edu/~gohlke/pythonlibs/#babel>`_
 这个网址中记录了python需要的所有版本的第三方库的下载地址
 
-2. 利用ctrl + F在该页面检索zmq，并入下图所示：
+2. 利用ctrl + F在该页面检索zmq，如下图所示：
 
 .. image:: ./zmq1.png
 
@@ -61,3 +61,12 @@ Python下载官方地址:
     3. 在此处打开命令行窗口并输入: ``pip install pyzmq‑18.0.1‑cp27‑cp27m‑win_amd64.whl``
 
 这样就能够成功安装zmq第三方库。
+
+2. 运行.py文件
+===========
+
+如果你已经安装上面的操作完成了Python2.7的环境搭建和三方库的安装，
+那么你便可以使用python的IDE工具或者自带的IDLE打开文件夹中的.py文件。
+
+同时你还能够根据需要修改程序内部的功能或者新增功能，程序的注释已在内部给出。
+
