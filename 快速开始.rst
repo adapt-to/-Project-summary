@@ -38,7 +38,7 @@ Python下载官方地址:
 .. note::
     一般的安装方法是如下图所示打开至Python所在目录下的此处:
 
-    .. image:: ./lijin.png
+    .. image:: ./lujin.png
 
     然后在此文件夹下打开命令行窗口并在窗口中输入: pip install xxxxx (其中的xxxxx则为你需要安装的第三方库)
 
