@@ -23,6 +23,7 @@
 
    decoy_quantum_source_foreword
    快速开始
+   技术文档具体内容
    equipment_selection
    pc_fpga
    random_clk
