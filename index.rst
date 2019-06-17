@@ -25,6 +25,7 @@
    快速开始
    技术文档具体内容
    软件实现功能和具体代码
+   其他工作
    equipment_selection
    pc_fpga
    random_clk
