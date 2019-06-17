@@ -14,7 +14,7 @@
     2. ZMQ是网络通信中新的一层，介于应用层和传输层之间（按照TCP/IP划分），其是一个可伸缩层，可并行运行，分散在分布式系统间。
     3. ZMQ不是单独的服务，而是一个嵌入式库，它封装了网络通信、消息队列、线程调度等功能，向上层提供简洁的API，应用程序通过加载库文件，调用API函数来实现高性能网络通信。
 
-实现的代码片段::
+实现的代码片段(注释参见源码64行处)::
 
     class Slot_serial(object):
         def __init__(self, address, port):
@@ -26,8 +26,43 @@
             self.poller = zmq.Poller()
             self.poller.register(self.socket, zmq.POLLIN)
 
-2. 预期目标
+使用ZMQ能够和轻松的构建一个客户端-服务端架构。
+
+2. 显示框实时反馈软件操作
 ==============
+
+利用向函数传入信息，通过函数内部的判断并将需要显示的信息于显示框中显示。具体代码片段实现如下(注释参见源码228行处)::
+
+    def con_serial_v(self, message):
+        a = self.tabWidget.currentIndex()
+        starttime = time.strftime("%H:%M:%S - ", time.localtime(time.time()))
+        if a == 0:
+            self.textBrowser_BB84_show.append('{0}{1}'.format(starttime, message))
+            textcursor = QtGui.QTextCursor(self.textBrowser_BB84_show.textCursor())
+            self.textBrowser_BB84_show.moveCursor(textcursor.atStart())
+        elif a == 1:
+            self.textBrowser_COW_show.append('{0}{1}'.format(starttime, message))
+            textcursor = QtGui.QTextCursor(self.textBrowser_COW_show.textCursor())
+            self.textBrowser_COW_show.moveCursor(textcursor.atStart())
+        self.logger.logger.info(message)
+        text = self.serialer.request_serial(message)
+        try:# 如果在这个过程中发送了异常就全部获取的
+            text = unicode(text, 'gb2312')
+            text = text.encode('utf8')
+        except:
+            pass
+        endtime = time.strftime("%H:%M:%S - ", time.localtime(time.time()))
+        # log window
+        if a == 0:
+            self.textBrowser_BB84_show.append('{0}{1}'.format(endtime, text))
+            textcursor = QtGui.QTextCursor(self.textBrowser_BB84_show.textCursor())
+            self.textBrowser_BB84_show.moveCursor(textcursor.atStart())
+        elif a == 1:
+            self.textBrowser_COW_show.append('{0}{1}'.format(endtime, text))
+            textcursor = QtGui.QTextCursor(self.textBrowser_COW_show.textCursor())
+            self.textBrowser_COW_show.moveCursor(textcursor.atStart())
+        self.logger.logger.info(text)
+        return text
 
 3. 预期目标
 ==============
