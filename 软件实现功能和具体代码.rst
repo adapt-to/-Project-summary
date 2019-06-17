@@ -9,7 +9,7 @@
 
 该功能是使用python中的第三方库ZeroMQ。
 
-..note::
+.. note::
     1. ZeroMQ（简称ZMQ）是一个基于消息队列的多线程网络库，其对套接字类型、连接处理、帧、甚至路由的底层细节进行抽象，提供跨越多种传输协议的套接字。
     2. ZMQ是网络通信中新的一层，介于应用层和传输层之间（按照TCP/IP划分），其是一个可伸缩层，可并行运行，分散在分布式系统间。
     3. ZMQ不是单独的服务，而是一个嵌入式库，它封装了网络通信、消息队列、线程调度等功能，向上层提供简洁的API，应用程序通过加载库文件，调用API函数来实现高性能网络通信。
@@ -46,7 +46,7 @@
             self.textBrowser_COW_show.moveCursor(textcursor.atStart())
         self.logger.logger.info(message)
         text = self.serialer.request_serial(message)
-        try:# 如果在这个过程中发送了异常就全部获取的
+        try:
             text = unicode(text, 'gb2312')
             text = text.encode('utf8')
         except:
