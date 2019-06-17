@@ -11,7 +11,7 @@
 
 **建立系统的文档帮助自己也帮助他人吧！**
 
-**文档使用的语法为reStructuredText`语法参考 <https://3vshej.cn/rstSyntax/index.html>`_**
+**文档使用的语法为reStructuredText `语法参考 <https://3vshej.cn/rstSyntax/index.html>`_ **
 
 
 .. image:: ./right.gif
