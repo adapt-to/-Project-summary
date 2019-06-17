@@ -52,7 +52,6 @@
         except:
             pass
         endtime = time.strftime("%H:%M:%S - ", time.localtime(time.time()))
-        # log window
         if a == 0:
             self.textBrowser_BB84_show.append('{0}{1}'.format(endtime, text))
             textcursor = QtGui.QTextCursor(self.textBrowser_BB84_show.textCursor())
@@ -64,8 +63,78 @@
         self.logger.logger.info(text)
         return text
 
-3. 预期目标
+3. 诱骗态占比随机调节
 ==============
+
+实现诱骗态占比的随机调节是根据用户输入的数据进行不同的处理，相应处理方式是:
+
+.. note::
+   1. 输入的为0~100内的数值，那么会根据输入的数据对随机数范围进行标定
+   2. 输入的为小于0或大于100的数值，那么显示框会反馈让用户重新输入数据
+   3. 输入的是非数字字符，那么显示框会反馈让用户重新输入
+   4. 不输入任何数值，那么会默认诱骗态占比为30%
+
+实现的代码片段如下(注释参见源码260行)::
+
+    def con_serial_zidingyi(self, message,flage=0):
+        global ADDRESS
+        a = self.tabWidget.currentIndex()
+        if flage==0:
+            starttime = time.strftime("%H:%M:%S - ", time.localtime(time.time()))
+            if a == 0:
+                self.textBrowser_zidingyi.append('{0}{1}'.format(starttime, message))
+                self.textBrowser_zidingyi.moveCursor(textcursor.atStart())
+            elif a == 1:
+                self.textBrowser_zidingyi_cow.append('{0}{1}'.format(starttime, message))
+                textcursor = QtGui.QTextCursor(self.textBrowser_zidingyi_cow.textCursor())
+                self.textBrowser_zidingyi_cow.moveCursor(textcursor.atStart())
+            text = self.serialer.request_serial(message)
+            try:
+                text = unicode(text, 'gb2312')
+                text = text.encode('utf8')
+            except:
+                pass
+            endtime = time.strftime("%H:%M:%S - ", time.localtime(time.time()))
+            if a == 0:
+                self.textBrowser_zidingyi.append('{0}{1}'.format(endtime, text))
+                textcursor = QtGui.QTextCursor(self.textBrowser_zidingyi.textCursor())
+                self.textBrowser_zidingyi.moveCursor(textcursor.atStart())
+            elif a == 1:
+                self.textBrowser_zidingyi_cow.append('{0}{1}'.format(endtime, text))
+                textcursor = QtGui.QTextCursor(self.textBrowser_zidingyi_cow.textCursor())
+                self.textBrowser_zidingyi_cow.moveCursor(textcursor.atStart())
+        elif flage==1:
+            path = '/'.join(ADDRESS.split('/')[0:-1])
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            if a == 0:
+                if '.txt' in ADDRESS.split('/')[-1]:
+                    ADDRESS = path + '/' + ADDRESS.split('/')[-1]
+                else:
+                    time_end = time.strftime("-%Y-%m-%d-%H:%M:%S", time.localtime(time.time()))
+                    filename = 'BB84' + time_end + '.txt'
+                    ADDRESS = path + '/' + filename
+                with open(ADDRESS, 'w') as f:
+                    pass
+                self.textBrowser_BB84_show.append(u'{0}{1}\n目录文件设置成功：{2} '.format(time.strftime("%H:%M:%S - ", time.localtime(time.time())), message,ADDRESS))
+                textcursor = QtGui.QTextCursor(self.textBrowser_BB84_show.textCursor())
+                self.textBrowser_BB84_show.moveCursor(textcursor.atStart())
+            elif a == 1:
+                if '.txt' in ADDRESS.split('/')[-1]:
+                    ADDRESS = path + '/' + ADDRESS.split('/')[-1]
+                else:
+                    time_end = time.strftime("-%Y-%m-%d-%H:%M:%S", time.localtime(time.time()))
+                    filename = 'COW' + time_end + '.txt'
+                    ADDRESS = path + '/' + filename
+                with open(ADDRESS, 'w') as f:
+                    pass
+                self.textBrowser_COW_show.append(u'{0}{1}\n目录文件设置成功：{2} '.format(time.strftime("%H:%M:%S - ", time.localtime(time.time())), message,ADDRESS))
+                textcursor = QtGui.QTextCursor(self.textBrowser_COW_show.textCursor())
+                self.textBrowser_COW_show.moveCursor(textcursor.atStart())
+            return 1
+        return text
 
 4. 预期目标
 ==============
