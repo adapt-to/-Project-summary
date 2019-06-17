@@ -14,18 +14,17 @@
     2. ZMQ是网络通信中新的一层，介于应用层和传输层之间（按照TCP/IP划分），其是一个可伸缩层，可并行运行，分散在分布式系统间。
     3. ZMQ不是单独的服务，而是一个嵌入式库，它封装了网络通信、消息队列、线程调度等功能，向上层提供简洁的API，应用程序通过加载库文件，调用API函数来实现高性能网络通信。
 
-实现的代码片段：
+实现的代码片段::
 
-```
-class Slot_serial(object):
-    def __init__(self, address, port):
-        self.port = port
-        self.address = address
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REQ)
-        self.socket.connect("tcp://%s:%s" % (self.address, self.port))
-        self.poller = zmq.Poller()
-        self.poller.register(self.socket, zmq.POLLIN)
+    class Slot_serial(object):
+        def __init__(self, address, port):
+            self.port = port
+            self.address = address
+            self.context = zmq.Context()
+            self.socket = self.context.socket(zmq.REQ)
+            self.socket.connect("tcp://%s:%s" % (self.address, self.port))
+            self.poller = zmq.Poller()
+            self.poller.register(self.socket, zmq.POLLIN)
 
 2. 预期目标
 ==============
