@@ -14,7 +14,7 @@
     2. ZMQ是网络通信中新的一层，介于应用层和传输层之间（按照TCP/IP划分），其是一个可伸缩层，可并行运行，分散在分布式系统间。
     3. ZMQ不是单独的服务，而是一个嵌入式库，它封装了网络通信、消息队列、线程调度等功能，向上层提供简洁的API，应用程序通过加载库文件，调用API函数来实现高性能网络通信。
 
-实现的代码片段(注释参见源码64行处)::
+实现的代码片段如下(注释参见源码64行处)::
 
     class Slot_serial(object):
         def __init__(self, address, port):
@@ -26,7 +26,8 @@
             self.poller = zmq.Poller()
             self.poller.register(self.socket, zmq.POLLIN)
 
-使用ZMQ能够和轻松的构建一个客户端-服务端架构。
+使用ZMQ能够和轻松的构建一个客户端-服务端架构。在代码片段中，使用了 ``zmq.Context()`` 创建了可供通信的上下文环境，然后使用 ``self.socket = self.context.socket(zmq.REQ)`` 创建了socket套接字，
+之后就是使用 ``self.socket.connect("tcp://%s:%s" % (self.address, self.port))`` 对指定的IP地址的端口进行连接，它们之间是建立的TCP/IP协议。所以传递的信息是完全安全并且不会重发的。
 
 2. 显示框实时反馈软件操作
 ==============
@@ -62,6 +63,8 @@
             self.textBrowser_COW_show.moveCursor(textcursor.atStart())
         self.logger.logger.info(text)
         return text
+
+在上述代码中，使用了 ``self.textBrowser_BB84_show.append()`` 函数对信息进行实时显示。通过 ``textcursor = QtGui.QTextCursor(self.textBrowser_COW_show.textCursor())`` 可以将显示框中的滑块随着反馈信息的更新进行自动下拉。
 
 3. 诱骗态占比随机调节
 ==============
@@ -173,20 +176,48 @@
 在上述代码中，首先使用 ``threading.Thread()`` 函数创建一个子线程，此时子线程还未执行。当执行 ``self.bb84_1.start()`` 后，该子线程得到命令，开始执行。
 直到主线程退出或者主动结束子线程前，它会一直运行。这也正好满足我们需要实时下发随机数的要求。
 
-6. 预期目标
+6. 实现下发随机数的暂停和继续操作
 ==============
 
-7. 预期目标
+实现本操作中，所使用的是子线程的开始以及结束，暂停实则就是结束此处下发的子线程，继续就是重新创建子线程并开始下发。具体的代码片段如下所示(注释参见源码696行处)::
+    
+    @QtCore.pyqtSignature("")
+    def on_pushButton_BB84_interact_clicked(self):
+        a = self.tabWidget.currentIndex()
+        def _async_raise(tid1, exctype=SystemExit):
+            tid = ctypes.c_long(tid1)
+            if not inspect.isclass(exctype):
+                exctype = type(exctype)
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+            if res == 0:
+                raise ValueError("invalid thread id")
+            elif res != 1:
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+                raise SystemError("PyThreadState_SetAsyncExc failed")
+        _async_raise(self.bb84_1.ident)
+        if a == 0:
+            self.textBrowser_BB84_rand_show.append(u'\n下发已暂停！\n')
+        elif a == 1:
+            self.textBrowser_COW_rand_show.append(u'\n下发已暂停！\n')
+
+在代码片段中，当按下暂停按钮，就会执行该装饰器装饰的函数，在该函数中使用了python中的ctype库强制结束了子线程，如果需要继续下发时，则再次执行功能5中所述的操作即可。
+本功能巧妙的使用结束子线程的操作来模仿暂停的操作。
+
+
+7. 自定义诱骗态位置信息文件存储的目录地址
 ==============
 
-8. 预期目标
-==============
+本功能使用了python中的os库，对目录和文件夹进行操作。它可以创建或者删除指定的目录或者文件。代码片段如下(注释参见源码497行处)::
+    
+    @QtCore.pyqtSignature("")
+    def on_pushButton_address_clicked(self):
+        global ADDRESS
+        ADDRESS = str(unicode(self.lineEdit_address.text(), 'utf8', 'ignore').encode('gb2312'))
+        anster = self.con_serial_zidingyi(ADDRESS,1)
 
-9. 预期目标
-==============
+在代码片段中，调用了 ``self.con_serial_zidingyi(ADDRESS,1)`` 函数，在该函数中，对目录结构和文件夹进行了处理。对于用户输入不同的文件信息进行不同的处理，具体的处理方式如下:
 
-10. 预期目标
-==============
-
-11. 预期目标
-==============
+.. note::
+    1. 用户输入正确的目录文件名，显示框反馈目录设置成功，并成功创建
+    2. 用户输入错误的目录文件名，显示框反馈信息提示用户重新输入
+    3. 用户不输入目录文件名，显示框会反馈软件自动创建的文件目录地址
