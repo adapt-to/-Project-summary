@@ -136,11 +136,42 @@
             return 1
         return text
 
-4. 预期目标
+4. 参数查询和设置
 ==============
 
-5. 预期目标
+在这部分，是利用pyqt中的槽和信号的绑定来实现的，通过点击按钮就可以执行装饰器装饰的函数，显示或者设置相应的参数。
+通过这样的方式可以很轻松的复用多个按钮。实现的代码片段如下(注释参见源码329行处)::
+
+    @QtCore.pyqtSignature("")
+    def on_pushButton_range_clicked(self):
+        range = unicode(self.lineEdit_qrng_range.text(), 'utf8', 'ignore').encode('gb2312')
+        if not range == '':
+            try:
+                answer = self.con_serial(float(range))
+            except ValueError:
+                a = u'诱骗态占比设置：' + range
+                anster = self.con_serial(a)
+        else:
+            answer = self.con_serial(30)
+
+这里通过调节诱骗态占比的按钮举例，通过装饰器 ``@QtCore.pyqtSignature("")`` 可以对下面的函数进行装饰，装饰后的函数就具有了槽和信号的功能(注意：被装饰的函数的函数名是具有固定的写法)。
+这样，点击相应的按钮后就能够执行对应的函数，在不同的函数中执行不同的操作就可以实现不同的功能。
+
+
+5. 实现随机数的实时加载显示
 ==============
+
+实现这个功能所需要的操作是把执行UI界面的程序逻辑和执行随机数实时加载的程序逻辑进行分开处理，所以这里用到了多线程的形式。
+使用多线程能够避免两个逻辑在同时执行时发生冲突，也可以实时显示信息，具体的代码片段如下(注释参见源码678行处)::
+    
+    @QtCore.pyqtSignature("")
+    def on_pushButton_BB84_clicked(self):
+        self.bb84_1 = threading.Thread(target=self.BB84_clicked, name='')
+        self.bb84_1.setDaemon(True)
+        self.bb84_1.start()
+
+在上述代码中，首先使用 ``threading.Thread()`` 函数创建一个子线程，此时子线程还未执行。当执行 ``self.bb84_1.start()`` 后，该子线程得到命令，开始执行。
+直到主线程退出或者主动结束子线程前，它会一直运行。这也正好满足我们需要实时下发随机数的要求。
 
 6. 预期目标
 ==============
